@@ -1,45 +1,36 @@
-// Efeito animado de sparkles dourados no fundo do HERO
-const sparklesContainer = document.querySelector('.sparkles-bg');
-const heroSection = document.querySelector('.hero');
-const sparkleAmount = window.innerWidth < 600 ? 16 : 24;
-const sparkleSVG =
-  '<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><g filter="url(#glow)"><path d="M9 1L10.55 7.25L17 9L10.55 10.75L9 17L7.5 10.75L1 9L7.5 7.25L9 1Z" fill="#FFD700"/></g><defs><filter id="glow" x="-4" y="-4" width="26" height="26" filterUnits="userSpaceOnUse"><feGaussianBlur stdDeviation="2.2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>';
+// SPARKLES GLOBAIS PREMIUM
 
-function genSparkle() {
-  const sparkle = document.createElement('span');
-  sparkle.classList.add('sparkle');
-  sparkle.innerHTML = sparkleSVG;
-  // Posição aleatória na largura
-  const heroRect = heroSection.getBoundingClientRect();
-  const left = Math.random() * 97 + 1;
-  const top = Math.random() * 92 + 4;
-  sparkle.style.left = left + "%";
-  sparkle.style.top = top + "%";
-  sparkle.style.animationDuration = (Math.random() * 2 + 4.2) + "s";
-  sparkle.style.opacity = (Math.random() * 0.3 + 0.10).toFixed(2);
-  sparklesContainer.appendChild(sparkle);
+const container = document.querySelector('.global-sparkles');
+const sparkleTotal = window.innerWidth < 600 ? 18 : 28;
 
-  // Remove e recria o sparkle após a animação
-  sparkle.addEventListener('animationend', () => {
-    sparkle.remove();
-    if (sparklesContainer.childElementCount <= sparkleAmount)
-      setTimeout(genSparkle, Math.random()*1200+100);
+const sparkleSVG = `
+<svg viewBox="0 0 18 18" width="18" height="18">
+<path d="M9 1L10.5 7.2L17 9L10.5 10.7L9 17L7.5 10.7L1 9L7.5 7.2Z" fill="#FFD700"/>
+</svg>
+`;
+
+function spawnSparkle(){
+  if(!container) return;
+
+  const s = document.createElement('span');
+  s.className = 'sparkle';
+  s.innerHTML = sparkleSVG;
+
+  s.style.left = Math.random()*100+'%';
+  s.style.top = Math.random()*100+'%';
+  s.style.opacity = (Math.random()*0.3+0.1).toFixed(2);
+  s.style.animationDuration = (Math.random()*3+5)+'s';
+
+  container.appendChild(s);
+
+  s.addEventListener('animationend',()=>{
+    s.remove();
+    if(container.childElementCount < sparkleTotal){
+      setTimeout(spawnSparkle,Math.random()*1200+300);
+    }
   });
 }
 
-// Start
-if (sparklesContainer && heroSection) {
-  for (let i = 0; i < sparkleAmount; i++) {
-    setTimeout(genSparkle, i * 180);
-  }
+for(let i=0;i<sparkleTotal;i++){
+  setTimeout(spawnSparkle,i*200);
 }
-
-// Simples lazy load para as imagens não-hero
-document.addEventListener("DOMContentLoaded", function () {
-  const imgs = document.querySelectorAll("img[loading='lazy']");
-  imgs.forEach(img => {
-    img.addEventListener('error', () => {
-      img.style.display = "none";
-    });
-  });
-});
